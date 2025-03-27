@@ -2,14 +2,11 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-import zipfile
 import logging
 from typing import List, Optional
 
 class ANSScraper:
-    """
-    Classe para scraping do site da ANS e download de Anexos I e II em PDF.
-    """
+    """Classe para scraping de documentos PDF de sites governamentais."""
     
     def __init__(self, base_url: str):
         self.base_url = base_url
@@ -37,30 +34,30 @@ class ANSScraper:
         })
 
     def find_pdf_links(self) -> List[str]:
-        """
-        Encontra links para os Anexos I e II no site da ANS.
-        
-        Returns:
-            List[str]: URLs dos PDFs encontrados
-        """
+        """Encontra links de PDFs nos Anexos I e II."""
         try:
-            soup = self._get_page_content(self.base_url)
-            if not soup:
-                return []
-
-            pdf_links = []
-            for link in soup.find_all('a', href=True):
-                text = link.get_text().strip().lower()
-                if any(keyword in text for keyword in ['anexo i', 'anexo ii']):
-                    pdf_url = urljoin(self.base_url, link['href'])
-                    if pdf_url.lower().endswith('.pdf'):
-                        pdf_links.append(pdf_url)
-                        self.logger.info(f"Link encontrado: {pdf_url}")
-            
-            return pdf_links
-
+            soup = BeautifulSoup(self.session.get(self.base_url).content, 'html.parser')
+            return [
+                urljoin(self.base_url, a['href'])
+                for a in soup.select('a[href$=".pdf"]')
+                if any(keyword in a.get('href', '').lower() 
+                      for keyword in ['anexo-i', 'anexo_ii'])
+            ]
         except Exception as e:
             self.logger.error(f"Erro ao buscar links: {str(e)}")
             return []
 
-    # ... (continua com os outros métodos)
+    def download_pdfs(self, pdf_urls: List[str], output_dir: str = 'downloads') -> List[str]:
+        """Baixa PDFs e retorna lista de caminhos locais."""
+        os.makedirs(output_dir, exist_ok=True)
+        saved_files = []
+        
+        for url in pdf_urls:
+            try:
+                filename = os.path.join(output_dir, os.path.basename(url))
+                with open(filename, 'wb') as f:
+                    f.write(self.session.get(url).content)
+                saved_files.append(filename)
+            except Exception as e:
+                self.logger.error(f"Falha ao baixar {url}: {str(e)}")
+        return saved_files
