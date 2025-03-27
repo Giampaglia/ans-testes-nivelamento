@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import logging
 from typing import List, Optional, Dict, Set
+import zipfile
 
 class PDFScraper:
     """Classe otimizada para scraping de documentos PDF com tratamento robusto de erros."""
@@ -132,12 +133,90 @@ class PDFScraper:
                 self.logger.error(f"Falha ao baixar {attachment_type}: {str(e)}")
         
         return local_files
-
+        
     def run(self, output_dir: str = 'downloads') -> Dict[str, str]:
-        """Executa o fluxo completo de scraping e download."""
-        attachments = self.find_attachments()
-        if not attachments:
-            self.logger.warning("Nenhum anexo encontrado")
-            return {}
+        """Executa o fluxo completo de scraping, download e compactação."""
+        try:
+            # 1. Busca os anexos
+            attachments = self.find_attachments()
+            if not attachments:
+                self.logger.warning("Nenhum anexo encontrado")
+                return {}
+
+            # 2. Faz o download
+            local_files = self.download_pdfs(attachments, output_dir)
             
-        return self.download_pdfs(attachments, output_dir)
+            # 3. Verificação EXTRA dos arquivos baixados
+            if not local_files:
+                self.logger.error("Nenhum arquivo foi baixado com sucesso")
+                return {}
+                
+            # 4. Verificação FÍSICA dos arquivos
+            arquivos_baixados = list(local_files.values())
+            if not all(os.path.exists(arq) for arq in arquivos_baixados):
+                missing = [arq for arq in arquivos_baixados if not os.path.exists(arq)]
+                self.logger.error(f"Arquivos não encontrados no disco: {missing}")
+                return local_files
+            
+            # 5. Compactação (CHAMADA CORRIGIDA)
+            if not self.compactar_anexos(output_dir):  # <-- Alteração crucial aqui
+                self.logger.error("Falha na compactação dos arquivos")
+            else:
+                self.logger.info("Compactação realizada com sucesso!")
+            
+            return local_files
+
+        except Exception as e:
+            self.logger.error(f"Erro durante a execução: {str(e)}", exc_info=True)
+            return {}
+    
+    def compactar_anexos(output_dir: str = 'downloads', zip_name: str = 'Anexos_ANS.zip') -> bool:
+            """
+            Compacta os arquivos Anexo_I.pdf e Anexo_II.pdf em um arquivo ZIP.
+            
+            Args:
+                output_dir: Diretório onde os arquivos PDF estão salvos
+                zip_name: Nome do arquivo ZIP a ser criado
+                
+            Returns:
+                bool: True se a compactação foi bem-sucedida, False caso contrário
+            """
+            # Lista dos arquivos a serem compactados
+            arquivos_alvo = [
+                os.path.join(output_dir, 'Anexo_I.pdf'),
+                os.path.join(output_dir, 'Anexo_II.pdf')
+            ]
+            
+            try:
+                # Verifica se os arquivos existem
+                arquivos_existentes = [arq for arq in arquivos_alvo if os.path.exists(arq)]
+                
+                if not arquivos_existentes:
+                    print("Erro: Nenhum arquivo encontrado para compactar")
+                    return False
+                    
+                # Cria o diretório se não existir
+                os.makedirs(output_dir, exist_ok=True)
+                
+                # Caminho completo do arquivo ZIP
+                zip_path = os.path.join(output_dir, zip_name)
+                
+                # Cria o arquivo ZIP
+                with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    for arquivo in arquivos_existentes:
+                        # Adiciona ao ZIP mantendo apenas o nome do arquivo (sem o caminho completo)
+                        zipf.write(arquivo, os.path.basename(arquivo))
+                        print(f"Adicionado: {os.path.basename(arquivo)} ao ZIP")
+                
+                print(f"Compactação concluída com sucesso: {zip_path}")
+                return True
+                
+            except PermissionError:
+                print(f"Erro: Sem permissão para escrever em {output_dir}")
+                return False
+            except zipfile.BadZipfile:
+                print("Erro: Problema ao criar o arquivo ZIP")
+                return False
+            except Exception as e:
+                print(f"Erro inesperado ao compactar: {str(e)}")
+                return False
