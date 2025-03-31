@@ -127,3 +127,10 @@
 2025-03-31 15:09:47,107 - INFO - Adicionado: Anexo_I.pdf ao ZIP
 2025-03-31 15:09:47,186 - INFO - Adicionado: Anexo_II.pdf ao ZIP
 2025-03-31 15:09:47,187 - INFO - Compactação concluída com sucesso: downloads\Anexos_Compactados.zip
+2025-03-31 15:11:22,644 - INFO - Anexo I encontrado: https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_I_Rol_2021RN_465.2021_RN627L.2024.pdf
+2025-03-31 15:11:22,655 - INFO - Anexo II encontrado: https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_II_DUT_2021_RN_465.2021_RN628.2025_RN629.2025.pdf
+2025-03-31 15:11:25,364 - INFO - Download concluído: downloads\Anexo_I.pdf
+2025-03-31 15:11:25,769 - INFO - Download concluído: downloads\Anexo_II.pdf
+2025-03-31 15:11:26,190 - INFO - Adicionado: Anexo_I.pdf ao ZIP
+2025-03-31 15:11:26,287 - INFO - Adicionado: Anexo_II.pdf ao ZIP
+2025-03-31 15:11:26,288 - INFO - Compactação concluída com sucesso: downloads\Anexos_Compactados.zip
