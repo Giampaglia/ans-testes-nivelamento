@@ -1,0 +1,72 @@
+{
+    "info": {
+      "_postman_id": "operadoras-ans-collection",
+      "name": "ANS Operadoras API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Buscar Operadoras",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:5000/buscar?termo=operadora",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["buscar"],
+            "query": [
+              {
+                "key": "termo",
+                "value": "operadora"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "Buscar por CNPJ",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:5000/buscar?termo=12345678000190",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["buscar"],
+            "query": [
+              {
+                "key": "termo",
+                "value": "12345678000190"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "Buscar por Nome Fantasia",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:5000/buscar?termo=Saúde",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["buscar"],
+            "query": [
+              {
+                "key": "termo",
+                "value": "Saúde"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  }
