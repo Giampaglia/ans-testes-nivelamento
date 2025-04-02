@@ -11,7 +11,7 @@
         <h1>Busca de Operadoras de Saúde</h1>
         
         <div class="search-box">
-            <input type="text" v-model="busca" placeholder="Digite o nome da operadora...">
+            <input type="text" v-model="busca" placeholder="Digite o nome da operadora ou Registro ANS...">
             <button @click="buscar">Buscar</button>
         </div>
         
@@ -20,9 +20,13 @@
         <div v-if="resultados.length > 0" class="results">
             <h2>Resultados ({{ resultados.length }})</h2>
             <div v-for="op in resultados" :key="op['Registro ANS']" class="operadora">
-                <h3>{{ op['Nome Fantasia'] || op['Razão Social'] }}</h3>
-                <p><strong>CNPJ:</strong> {{ op['CNPJ'] }}</p>
-                <p><strong>Registro ANS:</strong> {{ op['Registro ANS'] }}</p>
+                <h3>{{ op['Nome Fantasia'] || op['Razão Social'] || 'Nome não disponível' }}</h3>
+                <p><strong>Representante:</strong> {{ op['Representante'] || 'Não informado' }}</p>
+                <p><strong>Cargo do Representante:</strong> {{ op['Cargo_Representante'] || 'Não informado' }}</p>
+                <p><strong>Região de Comercialização:</strong> {{ op['Regiao_de_Comercializacao'] || 'Não informado' }}</p>
+                <p><strong>Data de Registro ANS:</strong> {{ op['Data_Registro_ANS'] || 'Não informado' }}</p>
+                <p><strong>CNPJ:</strong> {{ op['CNPJ'] || 'Não informado' }}</p>
+                <p><strong>Registro ANS:</strong> {{ op['Registro ANS'] || 'Não informado' }}</p>
             </div>
         </div>
     </div>
