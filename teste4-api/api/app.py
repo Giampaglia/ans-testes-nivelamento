@@ -45,17 +45,16 @@ def buscar_operadoras(
         if resultados.empty:
             raise HTTPException(status_code=404, detail="Nenhuma operadora encontrada")
 
-        #Substitui NaN por strings vazias para evitar erro JSON
+        # Substitui NaN por strings vazias para evitar erro JSON
         resultados = resultados.fillna("")
 
         return resultados.to_dict(orient="records")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erro na busca: {str(e)}")
-    
-    
 
 
 logging.basicConfig(level=logging.INFO)
+
 
 @app.get("/operadora/{registro_ans}")
 def detalhes_operadora(registro_ans: str):
@@ -85,17 +84,13 @@ def detalhes_operadora(registro_ans: str):
         "Nome_Fantasia",
     ] if col in df.columns]
 
+    # Seleciona as colunas desejadas
+    operadora = operadora[campos_desejados]
+
     # Converte a série para dicionário e substitui NaN por None
-    resultado = operadora[campos_desejados].iloc[0].to_dict()
+    resultado = operadora.iloc[0].to_dict()
     resultado = {chave: (None if pd.isna(valor) else valor) for chave, valor in resultado.items()}
-    
-    df_resultado = df_resultado[[col for col in campos_desejados if col in df_resultado.columns]]
 
-    resultado = df_resultado.to_dict(orient="records")
     print("Resposta da API:", resultado)  # Debug para ver o que está sendo enviado
-    
-
 
     return resultado
-    
-
